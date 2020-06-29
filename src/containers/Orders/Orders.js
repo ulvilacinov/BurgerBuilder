@@ -3,6 +3,9 @@ import Order from "../../components/Order/Order";
 import axios from "../../axios-order";
 import withErrorHanlder from "../../hoc/withErrorHandler/withErrorHandler";
 import Spinner from "../../components/UI/Spinner/Spinner";
+import * as actions from "../../store/actions/index";
+import { connect } from "react-redux";
+
 
 class Orders extends Component {
 
@@ -11,46 +14,35 @@ class Orders extends Component {
         loading: true
     }
     componentDidMount() {
-        this.loadData();
-    }
-
-    loadData = () => {
-        axios.get("/orders.json")
-            .then(response => {
-                const fetchedOrder = [];
-                for (let key in response.data) {
-                    fetchedOrder.push({
-                        ...response.data[key],
-                        id: key
-                    });
-                }
-                this.setState({ orders: fetchedOrder, loading: false });
-            })
-            .catch(error => {
-                this.setState({ loading: false });
-                console.log(error);
-            })
-    }
-    removeOrderHanlder = (id) => {
-        this.setState({loading: true });
-        axios.delete("/orders/" + id + ".json")
-            .then(res => {
-                this.loadData();
-            })
+        this.props.onFetchOrders();
     }
 
     render() {
         return (<div>
-            {this.state.loading ? <Spinner /> : this.state.orders.map(order => {
+            {this.props.loading ? <Spinner /> : this.props.orders.map(order => {
                 return <Order
                     ingredients={order.ingredients}
                     totalPrice={order.price}
                     key={order.id}
-                    remove={() => this.removeOrderHanlder(order.id)}
+                    remove={() => this.props.onDeleteOrder(order.id)}
                 />
             })}
         </div>);
     }
 }
 
-export default withErrorHanlder(Orders, axios);
+const mapStateToProps = state => {
+    return {
+        orders: state.order.orders,
+        loading: state.order.loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onFetchOrders : () => dispatch(actions.fetchOrders()),
+        onDeleteOrder: (orderId) => dispatch(actions.removeOrder(orderId))
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHanlder(Orders, axios));
