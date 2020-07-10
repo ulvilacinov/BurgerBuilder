@@ -74,7 +74,6 @@ class Auth extends Component {
     }
 
     render() {
-        debugger;
         const formElements = [];
         for (let key in this.state.controls) {
             formElements.push({

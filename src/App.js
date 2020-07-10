@@ -29,7 +29,6 @@ class App extends Component {
   }
 
   render() {
-    debugger;
     let routes = (
       <Switch>
         <Route path="/auth" component={asyncAuth} />
