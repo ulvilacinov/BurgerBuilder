@@ -8,20 +8,22 @@ import { connect } from "react-redux";
 
 
 const Orders = props => {
-    useEffect(() =>{
-        props.onFetchOrders(props.token,props.userId);
-    },[]) 
+    const { onFetchOrders } = props;
 
-        return (<div>
-            {props.loading ? <Spinner /> : props.orders.map(order => {
-                return <Order
-                    ingredients={order.ingredients}
-                    totalPrice={order.price}
-                    key={order.id}
-                    remove={() => props.onDeleteOrder(order.id,props.token)}
-                />
-            })}
-        </div>);
+    useEffect(() => {
+        onFetchOrders(props.token, props.userId);
+    }, [onFetchOrders])
+
+    return (<div>
+        {props.loading ? <Spinner /> : props.orders.map(order => {
+            return <Order
+                ingredients={order.ingredients}
+                totalPrice={order.price}
+                key={order.id}
+                remove={() => props.onDeleteOrder(order.id, props.token)}
+            />
+        })}
+    </div>);
 }
 
 const mapStateToProps = state => {
@@ -35,9 +37,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onFetchOrders : (token,userId) => dispatch(actions.fetchOrders(token,userId)),
-        onDeleteOrder: (orderId,token) => dispatch(actions.removeOrder(orderId,token))
+        onFetchOrders: (token, userId) => dispatch(actions.fetchOrders(token, userId)),
+        onDeleteOrder: (orderId, token) => dispatch(actions.removeOrder(orderId, token))
     }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(withErrorHanlder(Orders, axios));
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHanlder(Orders, axios));
